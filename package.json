@@ -32,7 +32,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "apexcharts": "^3.16.0",
     "react": "^16.8.6",
+    "react-apexcharts": "^1.3.6",
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
