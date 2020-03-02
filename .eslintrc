@@ -4,7 +4,7 @@
     "es6": true,
     "jquery": true,
     "node": true,
-    "jest": true
+    "jest": false
 	},
 	"extends": [
     "eslint:recommended",

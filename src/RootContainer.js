@@ -5,7 +5,7 @@ class RootContainer extends React.Component {
 	render() {
 		return (
 			<div className="rootContainer">
-				<ApexChart />
+				<BarChart />
 			</div>
 		);
 	}
@@ -13,7 +13,7 @@ class RootContainer extends React.Component {
 
 export default RootContainer;
 
-class ApexChart extends React.Component {
+class BarChart extends React.Component {
 	render() {
 		return (
 			<Plot
