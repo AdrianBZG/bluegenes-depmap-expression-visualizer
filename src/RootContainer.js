@@ -22,14 +22,17 @@ class RootContainer extends React.Component {
 
 		queryData(value, serviceUrl)
 			.then(res => {
-				console.log(res);
-				/*const map = {};
-				res.proteinAtlasExpression.forEach(r => {
-					const cells = map[r.tissue.tissueGroup.name] || [];
-					cells.push(r);
-					map[r.tissue.tissueGroup.name] = cells;
-				});*/
-				this.setState({ loading: false, data: res });
+				const map = {};
+				res.depMapExpression.forEach(r => {
+
+					if(r.depMapID.Disease != null) {
+						const cellLinesData = map[r.depMapID.Disease] || [];
+						cellLinesData.push({cellLine: r.depMapID.DepMapID, expression: r.value});
+						map[r.depMapID.Disease] = cellLinesData;
+					}
+				});
+
+				this.setState({ loading: false, data: map });
 			})
 			.catch(error => this.setState({ error }));
 	}
@@ -59,71 +62,89 @@ function linspace(a,b,n) {
 	return Plotly.d3.range(n).map(function(i){return a+i*(b-a)/(n-1);});
 }
 
-var boxNumber = 30;
-var boxColor = [];
-var allColors = linspace(0, 360, boxNumber);
-var plotData = [];
-var yValues = [];
-
-//Colors
-
-for( var i = 0; i < boxNumber;  i++ ){
-	var result = 'hsl('+ allColors[i] +',50%'+',50%)';
-	boxColor.push(result);
+function getMapSize(x) {
+    var len = 0;
+    for (var count in x) {
+            len++;
+    }
+    return len;
 }
 
-function getRandomArbitrary(min, max) {
-	return Math.random() * (max - min) + min;
-};
-
-//Create Y Values
-
-for( var i = 0; i < boxNumber;  i++ ){
-	var ySingleArray = [];
-	for( var j = 0; j < 10;  j++ ){
-		var randomNum = getRandomArbitrary(0, 1);
-		var yIndValue = 3.5*Math.sin(Math.PI * i/boxNumber) + i/boxNumber+(1.5+0.5*Math.cos(Math.PI*i/boxNumber))*randomNum;
-		ySingleArray.push(yIndValue);
-	}
-	yValues.push(ySingleArray);
-}
-
-//Create Traces
-
-for( var i = 0; i < boxNumber;  i++ ){
-	var result = {
-		y: yValues[i],
-		type:'box',
-		marker:{
-		color: boxColor[i]
-		}
-	};
-	plotData.push(result);
-};
-
-var plotLayout = {
-	xaxis: {
-	  showgrid: false,
-	  zeroline: false,
-	  tickangle: 60,
-	  showticklabels: false
-	},
-	yaxis: {
-	  zeroline: false,
-	  gridcolor: 'white'
-	},
-	//paper_bgcolor: 'rgb(233,233,233)',
-	//plot_bgcolor: 'rgb(233,233,233)',
-	showlegend:true
-  };
 
 class BarChart extends React.Component {
 	render() {
 		const { data } = this.props;
+
+		let numberOfDiseases = getMapSize(data);
+		let diseaseNames = []
+
+		// Format the data
+		// 1. Create the colors
+		var allColors = linspace(0, 360, numberOfDiseases);
+		var boxColor = [];
+		for( var i = 0; i < numberOfDiseases;  i++ ){
+			var result = 'hsl('+ allColors[i] +',50%'+',50%)';
+			boxColor.push(result);
+		}
+
+		//2. Create Y Values and get the disease names
+		var yValues = [];
+		for(var key in data){
+			var ySingleArray = [];
+			diseaseNames.push(key);
+			for( var j = 0; j < data[key].length;  j++ ){
+				ySingleArray.push(data[key][j].expression);
+			}
+			yValues.push(ySingleArray);
+		}
+
+		//3. Create the traces for the box plot
+		var plotData = [];
+		for( var i = 0; i < numberOfDiseases;  i++ ){
+			var result = {
+				y: yValues[i],
+				type:'box',
+				name: diseaseNames[i],
+				marker:{
+					color: boxColor[i]
+				}
+			};
+			plotData.push(result);
+		};
+
+		// Create the plot layout
+		var plotLayout = {
+			xaxis: {
+				showgrid: false,
+				zeroline: false,
+				tickangle: 35,
+				showticklabels: true,
+				type: 'category'
+			},
+			yaxis: {
+				title: {
+					text: 'TPM (log2)',
+						font: {
+						family: 'Courier New, monospace',
+						size: 18,
+						color: '#7f7f7f'
+					}
+				},
+				zeroline: false,
+				gridcolor: 'white'
+			},
+			//paper_bgcolor: 'rgb(233,233,233)',
+			//plot_bgcolor: 'rgb(233,233,233)',
+			showlegend:true
+		};
+
+		var plotConfig = {responsive: true};
+
 		return (
 			<Plot
 				data={plotData}
 				layout={plotLayout}
+				config={plotConfig}
 			/>
 		);
 	}

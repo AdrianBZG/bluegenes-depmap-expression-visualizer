@@ -3,11 +3,12 @@ const depMapExpressionQuery = geneId => ({
 	select: [
 		'Gene.depMapExpression.depMapID.DepMapID',
 		'Gene.depMapExpression.depMapID.Lineage',
+		'Gene.depMapExpression.depMapID.Disease',
 		'Gene.depMapExpression.value'
 	],
 	orderBy: [
 		{
-			path: 'Gene.depMapExpression.depMapID.Lineage',
+			path: 'Gene.depMapExpression.depMapID.Disease',
 			direction: 'ASC'
 		}
 	],
