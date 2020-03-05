@@ -1,12 +1,53 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
 import Plotly from 'plotly.js';
+import queryData from './queryData';
+import Loading from './components/Loading';
 
 class RootContainer extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: null,
+			error: null,
+			loading: true
+		};
+	}
+
+	componentDidMount() {
+		const {
+			serviceUrl,
+			entity: { value }
+		} = this.props;
+
+		queryData(value, serviceUrl)
+			.then(res => {
+				console.log(res);
+				/*const map = {};
+				res.proteinAtlasExpression.forEach(r => {
+					const cells = map[r.tissue.tissueGroup.name] || [];
+					cells.push(r);
+					map[r.tissue.tissueGroup.name] = cells;
+				});*/
+				this.setState({ loading: false, data: res });
+			})
+			.catch(error => this.setState({ error }));
+	}
+
 	render() {
 		return (
 			<div className="rootContainer">
-				<BarChart />
+				{this.state.error ? (
+					<div className="error">
+						{this.state.error.message
+							? 'Something went wrong!'
+							: this.state.error}
+					</div>
+				) : this.state.loading ? (
+					<Loading />
+				) : (
+					<BarChart data={this.state.data} />
+				)}
 			</div>
 		);
 	}
@@ -78,6 +119,7 @@ var plotLayout = {
 
 class BarChart extends React.Component {
 	render() {
+		const { data } = this.props;
 		return (
 			<Plot
 				data={plotData}

@@ -1,0 +1,36 @@
+const depMapExpressionQuery = geneId => ({
+	from: 'Gene',
+	select: [
+		'Gene.depMapExpression.depMapID.DepMapID',
+		'Gene.depMapExpression.depMapID.Lineage',
+		'Gene.depMapExpression.value'
+	],
+	orderBy: [
+		{
+			path: 'Gene.depMapExpression.depMapID.Lineage',
+			direction: 'ASC'
+		}
+	],
+	where: [
+		{
+			path: 'Gene.depMapExpression.gene.symbol',
+			op: '=',
+			value: "A1BG"
+		}
+	]
+});
+
+function queryData(geneId, serviceUrl, imjsClient = imjs) {
+	return new Promise((resolve, reject) => {
+		const service = new imjsClient.Service({ root: serviceUrl });
+		service
+			.records(depMapExpressionQuery(geneId))
+			.then(data => {
+				if (data && data.length) resolve(data[0]);
+				else reject('No data found!');
+			})
+			.catch(reject);
+	});
+}
+
+export default queryData;
