@@ -15,8 +15,7 @@
     "lint:fix": "./node_modules/.bin/eslint src/*.js -c .eslintrc --ext js --fix"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "lint-staged": {
     "*.js": [

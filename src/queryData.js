@@ -14,9 +14,9 @@ const depMapExpressionQuery = geneId => ({
 	],
 	where: [
 		{
-			path: 'Gene.depMapExpression.gene.symbol',
+			path: 'Gene.id',
 			op: '=',
-			value: "A1BG"
+			value: geneId
 		}
 	]
 });
