@@ -27,7 +27,7 @@ class RootContainer extends React.Component {
 
 					if(r.depMapID.Disease != null) {
 						const cellLinesData = map[r.depMapID.Disease] || [];
-						cellLinesData.push({cellLine: r.depMapID.DepMapID, expression: r.value});
+						cellLinesData.push({cellLine: r.depMapID.DepMapID, expression: r.DepmapExpressionValue});
 						map[r.depMapID.Disease] = cellLinesData;
 					}
 				});
@@ -89,6 +89,7 @@ class BarChart extends React.Component {
 
 		//2. Create Y Values and get the disease names
 		var yValues = [];
+
 		for(var key in data){
 			var ySingleArray = [];
 			diseaseNames.push(key);
@@ -111,6 +112,9 @@ class BarChart extends React.Component {
 			};
 			plotData.push(result);
 		};
+
+		console.log("Plot Data:");
+		console.log(plotData);
 
 		// Create the plot layout
 		var plotLayout = {
